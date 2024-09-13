@@ -11,7 +11,7 @@ const BarOverlay = () => {
       ease: "power4.inOut",
     });
 
-    gsap.to(".overlay", {
+    gsap.to(".bar-overlay", {
       delay: 6,
       height: 0,
       display: "none",
@@ -19,17 +19,12 @@ const BarOverlay = () => {
   }, []);
 
   return (
-    <div className="overlay flex fixed z-20 left-0 top-0 right-0 bottom-0">
+    <div className="bar-overlay flex fixed z-20 left-0 top-0 right-0 bottom-0">
       <div className="bar w-[20vw] bg-black"></div>
       <div className="bar w-[20vw] bg-black"></div>
       <div className="bar w-[20vw] bg-black"></div>
       <div className="bar w-[20vw] bg-black"></div>
       <div className="bar w-[20vw] bg-black"></div>
-      {/* <div className="bar w-[10vw] bg-black"></div>
-      <div className="bar w-[10vw] bg-black"></div>
-      <div className="bar w-[10vw] bg-black"></div>
-      <div className="bar w-[10vw] bg-black"></div>
-      <div className="bar w-[10vw] bg-black"></div> */}
     </div>
   );
 };
