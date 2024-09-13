@@ -1,8 +1,9 @@
 import localFont from "next/font/local";
-import { Instrument_Serif, Instrument_Sans } from "next/font/google";
+import { Instrument_Sans, Jost } from "next/font/google";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({ subsets: ["latin"] });
+const jost = Jost({ subsets: ["latin"] });
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,7 +25,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${instrumentSans.className}`}
+        className={`${geistSans.variable} ${geistMono.variable} ${jost.className}`}
       >
         {children}
       </body>

@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer class="h-[90px] md:h-[170px] w-full bottom-0 fixed text-white text-sm">
+    <footer class="hidden md:block h-[90px] md:h-[170px] w-full bottom-0 fixed text-white text-sm">
       <div class="w-[90%] mx-auto flex flex-col">
         <div class="ml-auto">
           <svg width="50" height="50" viewBox="0 0 50 50" fill="none">

@@ -4,7 +4,7 @@ import { useRef, useEffect } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { useMediaQuery } from "usehooks-ts";
-import { Instrument_Serif } from "next/font/google";
+import { Instrument_Serif, Jost, Lora } from "next/font/google";
 
 import Header from "./components/header";
 import Footer from "./components/footer";
@@ -12,6 +12,8 @@ import LoaderOverlay from "./components/loader-overlay";
 import BarOverlay from "./components/bar-overlay";
 
 const instrumentSerif = Instrument_Serif({ subsets: ["latin"], weight: "400" });
+const jost = Jost({ subsets: ["latin"], weight: "400" });
+const lora = Lora({ subsets: ["latin"] });
 
 export default function Home() {
   const section1BlurDataUrl =
@@ -202,7 +204,7 @@ export default function Home() {
       <Header />
 
       <main>
-        <div class="w-full h-screen flex flex-col md:flex-row">
+        <div class="w-full h-screen hidden md:flex">
           <div
             ref={librarySectionRef}
             class="md:w-6/12 h-[50%] md:h-screen flex items-center justify-center bg-gray-200 relative"
@@ -222,12 +224,14 @@ export default function Home() {
             />
 
             <div class="library_section_text-content text-white text-center z-10">
-              <div class="md:text-2xl">Where Music Sets You Free!</div>
+              <div class={`md:text-2xl ${jost.className}`}>
+                Where Music Sets You Free!
+              </div>
 
               <h1 class="text-4xl flex justify-center md:text-[80px] font-light md:mt-5">
                 <SplitText
                   text="THE LIBRARY"
-                  className={`h1-chars ${instrumentSerif.className}`}
+                  className="h1-chars heading-font"
                 />
               </h1>
 
@@ -263,7 +267,7 @@ export default function Home() {
               <h1 class="text-4xl flex justify-center md:text-[80px] font-light md:mt-5">
                 <SplitText
                   text="RESTAURANT"
-                  className={`h1-chars ${instrumentSerif.className}`}
+                  className="h1-chars heading-font"
                 />
               </h1>
 
@@ -271,6 +275,41 @@ export default function Home() {
                 EXPLORE MORE
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* mobile view */}
+        <div className="relative w-full h-screen">
+          <Image src="/images/mobile-image.jpg" fill className="object-cover" />
+
+          <div className="flex bg-black absolute bottom-0 w-full h-[70px]">
+            <button
+              className={`${jost.className} tracking-widest w-1/2 text-xs bg-[#CEAF7A] flex items-center justify-between px-5`}
+            >
+              THE LIBRARY CLUB
+              <svg
+                data-name="Layer 1"
+                viewBox="0 0 512 512"
+                fill="white"
+                className="w-5 rotate-90"
+              >
+                <path d="M256,34,432,210l-21.2,21.21L271,91.4V478H241V91.4L101.16,231.25,80,210Z" />
+              </svg>
+            </button>
+
+            <button
+              className={`${jost.className} tracking-widest w-1/2 text-xs bg-[#B89C6C] flex items-center justify-between gap-x-2 px-5`}
+            >
+              MAZIMI LAGOS
+              <svg
+                data-name="Layer 1"
+                viewBox="0 0 512 512"
+                fill="white"
+                className="w-5 rotate-90"
+              >
+                <path d="M256,34,432,210l-21.2,21.21L271,91.4V478H241V91.4L101.16,231.25,80,210Z" />
+              </svg>
+            </button>
           </div>
         </div>
       </main>

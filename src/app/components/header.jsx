@@ -1,6 +1,9 @@
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
+import { Jost } from "next/font/google";
+
+const jost = Jost({ subsets: ["latin"] });
 
 const HamburgerMenu = () => {
   return (
@@ -91,23 +94,23 @@ const MobileNav = ({ setShowMobileNav }) => {
   ];
 
   useEffect(() => {
-    gsap.fromTo(
-      ".mobile-nav-link",
-      { y: 300, opacity: 0 },
-      {
-        y: 0,
-        duration: 1.5,
-        opacity: 1,
-        stagger: { amount: 1 },
-        ease: "power4.inOut",
-      }
-    );
+    // gsap.fromTo(
+    //   ".mobile-nav-link",
+    //   { y: 300, opacity: 0 },
+    //   {
+    //     y: 0,
+    //     duration: 1.5,
+    //     opacity: 1,
+    //     stagger: { amount: 1 },
+    //     ease: "power4.inOut",
+    //   }
+    // );
 
     gsap.fromTo(
       ".contact",
       { y: 200, opacity: 0 },
       {
-        delay: 1.5,
+        // delay: 1.5,
         y: 0,
         duration: 1.5,
         opacity: 1,
@@ -131,7 +134,7 @@ const MobileNav = ({ setShowMobileNav }) => {
         </div>
 
         <div className="flex flex-col md:flex-row gap-y-8 md:justify-between">
-          <div class="md:text-[60px] text-white font-light flex flex-col gap-y-3">
+          {/* <div class="md:text-[60px] text-white font-light flex flex-col gap-y-3">
             {navItems.map((item, i) => (
               <div key={`nav-${i}`} className="flex items-center md:gap-x-5">
                 <a
@@ -146,26 +149,32 @@ const MobileNav = ({ setShowMobileNav }) => {
                 <ActiveArrow className="opacity-0 -translate-y-2 peer-hover:opacity-100 peer-hover:translate-y-0 transition-all duration-300 h-3 md:h-10" />
               </div>
             ))}
-          </div>
+          </div> */}
 
-          <div class="text-white text-sm md:text-base">
+          <div class={`${jost.className} text-white text-sm md:text-base`}>
+            <div className="gradient-text text-4xl mb-16 tracking-widest contact">
+              CONNECT WITH US
+            </div>
+
+            <div className="md:mb-10 mb-5 contact">
+              <div className="mb-3 gradient-text">FIND US</div>
+              <div className="mb-1">
+                82 Adetokunbo Ademola Street, Eti-Osa 101241, Victoria Island,
+                Lagos
+              </div>
+              <div className="mb-1">0700 542 7279</div>
+              <div>0700 542 7279</div>
+            </div>
+
             <div className="md:mb-10 mb-5 contact">
               <div className="mb-3 gradient-text">EMAIL</div>
               <div>info@thelibrarylagos.com</div>
             </div>
 
             <div className="md:mb-10 mb-5 contact">
-              <div className="mb-3 gradient-text">PHONE NUMBER</div>
-              <div>0700 542 7279</div>
-              <div>0700 542 7279</div>
-            </div>
-
-            <div className="md:mb-10 mb-5 contact">
-              <div className="mb-3 gradient-text">ADDRESS</div>
-              <div>
-                82 Adetokunbo Ademola Street, Eti-Osa 101241, Victoria Island,
-                Lagos
-              </div>
+              <div className="mb-3 gradient-text">OPENING HOURS</div>
+              <div>Tuesday - Thursday 4pm - 11pm</div>
+              <div>Friday - Saturday 12pm till late</div>
             </div>
 
             <div className="md:mb-10 mb-5 contact">
@@ -174,7 +183,7 @@ const MobileNav = ({ setShowMobileNav }) => {
               </div>
 
               <div className="flex items-center gap-x-5">
-                <svg
+                {/* <svg
                   width="36"
                   height="38"
                   viewBox="0 0 36 38"
@@ -222,7 +231,39 @@ const MobileNav = ({ setShowMobileNav }) => {
                     d="M18.9996 16.6954V15.4329C18.9996 14.8918 19.0923 14.5311 19.9266 14.5311H21.1316V12.3669H19.185C16.8677 12.3669 16.0334 13.449 16.0334 15.2526V16.6052H14.5503V18.7695H16.0334V25.2624H18.9996V18.8597H20.9462L21.2243 16.6954H18.9996Z"
                     fill="#040707"
                   />
+                </svg> */}
+
+                <button>TWITTER</button>
+
+                <svg
+                  width="9"
+                  height="20"
+                  viewBox="0 0 9 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0.548293 10L4.5 1.21843L8.45171 10L4.5 18.7816L0.548293 10Z"
+                    stroke="#CEAF7A"
+                  />
                 </svg>
+
+                <button>FACEBOOK</button>
+
+                <svg
+                  width="9"
+                  height="20"
+                  viewBox="0 0 9 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0.548293 10L4.5 1.21843L8.45171 10L4.5 18.7816L0.548293 10Z"
+                    stroke="#CEAF7A"
+                  />
+                </svg>
+
+                <button>INSTAGRAM</button>
               </div>
             </div>
           </div>
@@ -242,11 +283,11 @@ const Header = () => {
   };
 
   return (
-    <header class="header h-[80px] md:h-[100px] fixed w-full z-20 top-0 left-0 right-0 backdrop-blur-md">
+    <header class="header h-[80px] md:h-[100px] fixed w-full z-20 top-0 left-0 right-0 md:backdrop-blur-md">
       {/* <div className="h-full w-full absolute border border-green-700 blur-md -z-10"></div> */}
-      <nav class="flex justify-between h-full items-center w-[90%] mx-auto">
+      <nav class="relative flex justify-between h-full items-center w-[90%] mx-auto">
         <div>
-          <div className="z-20">
+          <div className="z-20 hidden md:block">
             <button onClick={handleShowNav}>
               <HamburgerMenu />
             </button>
@@ -262,9 +303,9 @@ const Header = () => {
           </div>
         </div>
 
-        {/* <div class="h-[20px] w-[150px] relative">
-          <Image src="/images/logo.png" alt="logo" class="w-full h-full" fill />
-        </div> */}
+        <div class="relative md:absolute md:left-1/2 md:-translate-x-1/2 w-[131px] h-[20px] mx-auto md:mx-0">
+          <Image src="/images/mobile-logo.png" alt="logo" fill />
+        </div>
 
         <div class="hidden md:block">
           <button class="border border-white text-white h-[50px] w-[186px] flex items-center justify-center py-2 mx-auto font-medium text-sm">
