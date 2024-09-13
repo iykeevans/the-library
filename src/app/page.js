@@ -204,6 +204,7 @@ export default function Home() {
       <Header />
 
       <main>
+        {/* Desktop view */}
         <div class="w-full h-screen hidden md:flex">
           <div
             ref={librarySectionRef}
@@ -279,10 +280,10 @@ export default function Home() {
         </div>
 
         {/* mobile view */}
-        <div className="relative w-full h-screen">
+        <div className="relative w-full h-screen md:hidden">
           <Image src="/images/mobile-image.jpg" fill className="object-cover" />
 
-          <div className="flex bg-black absolute bottom-0 w-full h-[70px]">
+          <div className="flex bg-black fixed bottom-0 w-full h-[70px]">
             <button
               className={`${jost.className} tracking-widest w-1/2 text-xs bg-[#CEAF7A] flex items-center justify-between px-5`}
             >
