@@ -224,7 +224,7 @@ export default function Home() {
             <div class="library_section_text-content text-white text-center z-10">
               <div class="md:text-2xl">Where Music Sets You Free!</div>
 
-              <h1 class="text-4xl md:text-[80px] font-light md:mt-5">
+              <h1 class="text-4xl flex justify-center md:text-[80px] font-light md:mt-5">
                 <SplitText
                   text="THE LIBRARY"
                   className={`h1-chars ${instrumentSerif.className}`}
