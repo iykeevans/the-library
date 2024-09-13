@@ -241,12 +241,12 @@ export default function Home() {
             ref={restaurantSectionRef}
             class="section-2 w-full md:w-6/12 h-[50%] md:h-screen ml-auto flex items-center justify-center relative overflow-x-hidden bg-gray-300"
           >
-            {/* <Image
+            <Image
               src={section2BlurDataUrl}
               alt="section2Blur"
               className="w-full h-full"
               fill
-            /> */}
+            />
 
             <Image
               src="/images/image-2.png"
