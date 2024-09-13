@@ -1,101 +1,281 @@
+"use client";
+
+import { useRef, useEffect } from "react";
 import Image from "next/image";
+import gsap from "gsap";
+import { useMediaQuery } from "usehooks-ts";
+import { Instrument_Serif } from "next/font/google";
+
+import Header from "./components/header";
+import Footer from "./components/footer";
+import LoaderOverlay from "./components/loader-overlay";
+import BarOverlay from "./components/bar-overlay";
+
+const instrumentSerif = Instrument_Serif({ subsets: ["latin"], weight: "400" });
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const section1BlurDataUrl =
+    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAOGAnUDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAECBv/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAWAQEBAQAAAAAAAAAAAAAAAAAAAQL/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwDkQFYFRQABQABUUAABUUAAABVUAAAAAAAAAAAAAAAEAAAQQABFQBFQBFQBFQAAEAAAQQAAAAAABQAAABQAAAFRQAAAFAAAAGgEQVFEABQABUUAABUUAAAAVQFAAAAAAAAAAAAAAEAAAQQABFQBFQBFQBFQAAEAAAQQAAAAAABQAAABQAAAFRQAAAFAAAAGgEQVFAAAAAVFAAAVFAAAAFUBQAAAAAAAAAAAABAAAARAAAQAEVAEVAEVAAAQAABBAAAAAAAFAAAAFAAAAVFAAAAUAAAAaARBUAUAAAAAFAAABQAAAUBVAAAAAAAAAAAAEVAAAEVEAAEAARUARUARUAABAEAAEAFABAAAAABQABQAAAFQBQAAAAFAAGgEQABRFAAAABQAAAURQAFUVFAAAAAAAAAAAAAQAAAEVEAAEAARUARUARUAABAEAEAAAAAAAAAAUAAURQAAAAUAAAABQABoBEAAAAUAAAFEUAABUAUAUVBRQAAAAAAAAAAQAAABBAAAQAAEAARUARUAABAEBFQAAUAEABQAQAUAAFRQAAAAURQAAAAAAaAEAAAAFQBQAFRQAAAAURRQBQVAFEVAAUAABAAAAAAEQAAEVAAAQAEABAAAQUAQEVAABAAUAAAAAEAFAAFAAAAVAFAAAAABoAQAAAAABRFAVAFAAAAVFFAFABAAUAAAAAAAAAAEBAAAQAEVAAAQAEAFEVEAABFQAAAAAAAAAAQAUAAURQAAAAURQAAAAaEUQAAAAAAVFAAAVFAAAAFUAAAAAABQAAAAAABEAAAEAAAQAAQAAVAAEVEAAEAAAAAAAAAAAAAVAABUAUAAAAABUAUQBoAQVAFEUAAAAFAAABRFAAFAAUQBQAAAAFAAAQAAQAAEAAAEAFEVAEVAAAEBAABAAAAAAAAAAAAABABQAAVFAAAAAAAABoAQAAABRFAAAVAFAAAFUAAAAAAAAAAAABQAQAAAQAAURUAABAAEAAAEAQEVAAAAAAAAAAAAAAAAFQAAABRFAAAAAABoRRAAAABUAUAAABUAUAUVAFAAAAAAAAAAAAAABAAAAQUAARUAABAAEVEAABAAAAAAAAAAAAAAAAAEAFAAAABUAUQBRAGgBAAFEAUABUAUAAABUUUAAABRAFEAUAAAAAAEAAAAFEAAAEAARUAABAEAAEAAAAAAAAAAAAAAAAAAAEAFAAAAAAAAGgBAAAABUUAABUAUAAAVRFAAAAAAAAAVAAAAAAAUQAAAEAAEAAABAAEBFQAAAAAAAAAAAAAAAAAAAAAAQAUAAAAAAaAEAAAAAAURQAAFQFUAAAAAFEAURQAAAAAABAAAUAARUAAAQAAAEAABBAAAAAAAAEAAAAAFEUAAAAAAAAAAQAAAAABoQEURQAFAAAABUBVAAVAFEUAAAAAAAAFQAAAABQABAAAAQAAAEVAAEBFQAAAAAABAAAAAAAAABRFAAAAAAAAAAAAEAAUAAAABRRAFAAAAVAFAAAAABRAFAAAAAAAFBAAAAABAAAABAAEAEAAAAAAARUAAAAAAAAAAAABRFAAAAAAAAAAAABQBAAAAABQABRFAAAABRAFEUAAAAAAAAAAUAABAVAAAABAAEAABAAAAAABAAAAAAAAAAAAAAAAAUQBQAAAAAAAAAUQEUQBQAAAAAFQUUQBQAAAAAUQBRAFEBVEAUQBUAAAAAAEAAAAQEAAAAAAAEAAAAAAAAAAAAAAAAAAAAVAFEUAAAAAAAAQAAABRAFEUAAABQAAVAFEAUAAAAAUAAAAAABAVAAAAAQEAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAFEAUAAAQAAAAAAABRBRRFAAAAAVAVRAFEAUQBUAAAAAABABAVAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAQAAAAAAVAFAVQAAAAAAAAAAEQUQBUAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABUAUQBRAFAAAAAAAAAAAAAAAAAAAAAAAAEAVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAFEAUQBRAFEAUQBRAFQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUEFAQUBBQEFAQUBBQEFQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFBBQEUAAAAAAAAAAAAAAAAAAAAAEUBBUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAQUBBQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABFAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAAAAAAAAAABAAUAABQRQAAAAAAAAARQEFAQAAAAAAAAABFAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAAAAAAEAAABQAAFVABFAFAAAAAAAAABAAAABBUAAAAAAAAARUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAABAAAAAAABQBQABQAQAFAAAAAAAAAAAEAAAAEFQAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQBAAABQAAAABQAAAAAAAAAABQAAUABBQEAAAQAAAAQAAAAAAABFQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAVAAAAAAAABQAAAAAAABQABQAQAAAAAFAAQVEAAAABFQAAAAAABFAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAVABAAAAUFAAAAAAAAFAAAAAAAAAAAAAAFEUQQAAABFAQAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQBAAABQBQAAAAAAAAFAAAAAAAAAAAUAAAEABRFRAAAABAAAAAAAAEVAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAAAAQAUAAUAAAAAAABUUAAAAAAAAAAAAAAUAAAEEVEUAAABBUAAAAAAARUAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAFQAAVFAAAAAAAAAUAAAAAAAAAAAAAAAABQAQARUAAAARUAAAAAAARUAAAAAAAAAAAAAAAAAAAAAAAABQAAAAAAFQABQAAAAAAAAAUAAAAAAAAAAAAAAAAAUAEABUAQAAEVAAAAAAAEVAAAAAAAAAAAAAAAAAAAAAAAFRQAAAAAAAFQABQEABQAAAAABQAAAAAAAAAAAAAAAAAAAABUAQAAEAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAf/Z";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const section2BlurDataUrl =
+    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAlACUDASIAAhEBAxEB/8QAGQAAAwEBAQAAAAAAAAAAAAAAAAQFAwEC/8QAHRAAAgIDAQEBAAAAAAAAAAAAAAIBIQMEETESIv/EABgBAQADAQAAAAAAAAAAAAAAAAMAAQIE/8QAHBEBAQACAgMAAAAAAAAAAAAAAAECIQMREjFB/9oADAMBAAIRAxEAPwD2nowq0YY/RzGtAWmsZOtCOwvpUdaENhfQu9mw0lOv6A2dbAWF7O4nsfxPHCFhz36P489elWOe6UHeOE/YeLOvsV6IbGxEdsOTbeLjvHQEG2ZmaAeYl8a867z9c6UEeeABBcvsZHnhO2HmX4AGfq+Jh0AAsr//2Q==";
+
+  const librarySectionRef = useRef(null);
+  const restaurantSectionRef = useRef(null);
+  const matches = useMediaQuery("(min-width: 768px)");
+
+  useEffect(() => {
+    const librarySection = librarySectionRef.current;
+    const restaurantSection = restaurantSectionRef.current;
+
+    const handleLibrarySectionMouseEnter = () => {
+      if (matches) {
+        gsap.to(librarySection, { width: "80%", duration: 0.5 });
+        gsap.to(restaurantSection, { width: "20%", duration: 0.5 });
+      } else {
+        gsap.to(librarySection, { height: "80%", duration: 0.5 });
+        gsap.to(restaurantSection, { height: "20%", duration: 0.5 });
+      }
+
+      gsap.to(".restaurant_section_text-content", {
+        opacity: 0,
+        duration: 0.5,
+      });
+
+      gsap.fromTo(
+        ".library_section-btn",
+        { opacity: 0, y: 100, display: "block" },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+        }
+      );
+    };
+
+    const handleLibrarySectionMouseLeave = () => {
+      if (matches) {
+        gsap.to(librarySection, { duration: 0.5, width: "50%" });
+        gsap.to(restaurantSection, { width: "50%", duration: 0.5 });
+      } else {
+        gsap.to(librarySection, { duration: 0.5, height: "50%" });
+        gsap.to(restaurantSection, { height: "50%", duration: 0.5 });
+      }
+
+      gsap.to(".restaurant_section_text-content", {
+        opacity: 1,
+        duration: 0.5,
+      });
+
+      gsap.fromTo(
+        ".library_section-btn",
+        { opacity: 1 },
+        {
+          opacity: 0,
+          display: "none",
+          duration: 0.5,
+        }
+      );
+    };
+
+    const handleRestaurantSectionMouseEnter = () => {
+      if (matches) {
+        gsap.to(restaurantSection, { width: "80%", duration: 0.5 });
+        gsap.to(librarySection, { width: "20%", duration: 0.5 });
+      } else {
+        gsap.to(restaurantSection, { height: "80%", duration: 0.5 });
+        gsap.to(librarySection, { height: "20%", duration: 0.5 });
+      }
+
+      gsap.to(".library_section_text-content", {
+        opacity: 0,
+        duration: 0.5,
+      });
+
+      gsap.fromTo(
+        ".restaurant_section_btn",
+        { opacity: 0, y: 100, display: "block" },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+        }
+      );
+    };
+
+    const handleRestaurantSectionMouseLeave = () => {
+      if (matches) {
+        gsap.to(restaurantSection, { duration: 0.5, width: "50%" });
+        gsap.to(librarySection, { width: "50%", duration: 0.5 });
+      } else {
+        gsap.to(restaurantSection, { duration: 0.5, height: "50%" });
+        gsap.to(librarySection, { height: "50%", duration: 0.5 });
+      }
+
+      gsap.to(".library_section_text-content", {
+        opacity: 1,
+        duration: 0.5,
+      });
+
+      gsap.fromTo(
+        ".restaurant_section_btn",
+        { opacity: 1 },
+        {
+          opacity: 0,
+          display: "none",
+          duration: 0.5,
+        }
+      );
+    };
+
+    librarySection.addEventListener(
+      "mouseenter",
+      handleLibrarySectionMouseEnter
+    );
+    librarySection.addEventListener(
+      "mouseleave",
+      handleLibrarySectionMouseLeave
+    );
+    restaurantSection.addEventListener(
+      "mouseenter",
+      handleRestaurantSectionMouseEnter
+    );
+    restaurantSection.addEventListener(
+      "mouseleave",
+      handleRestaurantSectionMouseLeave
+    );
+
+    gsap.fromTo(
+      ".h1-chars",
+      { opacity: 0, y: 200 },
+      {
+        delay: 6,
+        opacity: 1,
+        duration: 1.5,
+        y: 0,
+        stagger: { amount: 0.5 },
+        ease: "power4.inOut",
+      }
+    );
+
+    return () => {
+      librarySection.removeEventListener(
+        "mouseenter",
+        handleLibrarySectionMouseEnter
+      );
+      librarySection.removeEventListener(
+        "mouseleave",
+        handleLibrarySectionMouseLeave
+      );
+      librarySection.removeEventListener(
+        "mouseenter",
+        handleRestaurantSectionMouseEnter
+      );
+      librarySection.removeEventListener(
+        "mouseleave",
+        handleRestaurantSectionMouseLeave
+      );
+    };
+  }, []);
+
+  const SplitText = ({ text, className = "" }) => {
+    return (
+      <div className="flex">
+        {text.split("").map((char, i) => {
+          if (char === " ") return <span key="i">&nbsp;</span>;
+          return (
+            <span key={i} className={`${className} relative`}>
+              {char}
+            </span>
+          );
+        })}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <LoaderOverlay />
+
+      <BarOverlay />
+
+      <Header />
+
+      <main>
+        <div class="w-full h-screen flex flex-col md:flex-row">
+          <div
+            ref={librarySectionRef}
+            class="md:w-6/12 h-[50%] md:h-screen flex items-center justify-center bg-gray-200 relative"
           >
             <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              src={section1BlurDataUrl}
+              alt="section1Blur"
+              className="w-full h-full"
+              fill
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+            <Image
+              src="/images/image-1.jpg"
+              alt="left-section-image"
+              fill
+              className="object-cover w-full h-full"
+            />
+
+            <div class="library_section_text-content text-white text-center z-10">
+              <div class="md:text-2xl">Where Music Sets You Free!</div>
+
+              <h1 class="text-4xl md:text-[80px] font-light md:mt-5">
+                <SplitText
+                  text="THE LIBRARY"
+                  className={`h1-chars ${instrumentSerif.className}`}
+                />
+              </h1>
+
+              <button class="library_section-btn hidden border border-white md:h-[50px] w-[186px] items-center justify-center py-2 mx-auto font-medium md:mt-14 mt-4 text-sm md:text-base">
+                EXPLORE MORE
+              </button>
+            </div>
+          </div>
+
+          <div
+            ref={restaurantSectionRef}
+            class="section-2 w-full md:w-6/12 h-[50%] md:h-screen ml-auto flex items-center justify-center relative overflow-x-hidden bg-gray-300"
           >
-            Read our docs
-          </a>
+            {/* <Image
+              src={section2BlurDataUrl}
+              alt="section2Blur"
+              className="w-full h-full"
+              fill
+            /> */}
+
+            <Image
+              src="/images/image-2.png"
+              alt="right-section-image"
+              fill
+              className="object-cover w-full h-full"
+            />
+
+            <div class="restaurant_section_text-content text-white text-center z-10">
+              <div class="md:text-2xl text-center">
+                Savor the Moment, Taste the Experience
+              </div>
+
+              <h1 class="text-4xl flex justify-center md:text-[80px] font-light md:mt-5">
+                <SplitText
+                  text="RESTAURANT"
+                  className={`h1-chars ${instrumentSerif.className}`}
+                />
+              </h1>
+
+              <button class="restaurant_section_btn hidden border border-white md:h-[50px] w-[186px] items-center justify-center py-2 mx-auto font-medium md:mt-14 mt-4 text-sm md:text-base">
+                EXPLORE MORE
+              </button>
+            </div>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+      <Footer />
     </div>
   );
 }
