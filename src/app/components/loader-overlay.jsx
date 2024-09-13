@@ -20,15 +20,14 @@ const LoaderOverlay = () => {
 
   return (
     <div className="overlay fixed left-0 right-0 bottom-0 top-0 z-30 bg-black h-screen w-screen flex items-center justify-center">
-      {matches ? (
+      <img src="/images/library-1.gif" className="md:hidden" alt="" />
+
+      <div className="hidden md:flex items-center justify-center">
         <LottieC
           animationData={JSON.parse(JSON.stringify(loaderAnimation))}
           loop={false}
         />
-      ) : (
-        <img src="/images/the-library.gif" alt="" />
-      )}
-      {/* <img src="/images/the-library2.gif" alt="" /> */}
+      </div>
     </div>
   );
 };
